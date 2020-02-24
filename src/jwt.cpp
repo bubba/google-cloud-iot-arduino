@@ -15,9 +15,9 @@
 
 #include <stdio.h>
 
-#include "crypto/ecdsa.h"
-#include "crypto/nn.h"
-#include "crypto/sha256.h"
+#include "ecdsa.h"
+#include "nn.h"
+#include "sha256.h"
 #include "jwt.h"
 
 // base64_encode copied from https://github.com/ReneNyffenegger/cpp-base64
