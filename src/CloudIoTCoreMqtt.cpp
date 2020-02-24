@@ -25,10 +25,11 @@ void messageReceived(String &topic, String &payload);
 // MQTT common functions
 ///////////////////////////////
 CloudIoTCoreMqtt::CloudIoTCoreMqtt(
-    MQTTClient *_mqttClient, Client *_netClient, CloudIoTCoreDevice *_device){
+    MQTTClient *_mqttClient, Client *_netClient, CloudIoTCoreDevice *_device, bool _useHttpPort){
   this->mqttClient = _mqttClient;
   this->netClient = _netClient;
   this->device = _device;
+  this->useHttpPort = _useHttpPort;
 }
 
 void CloudIoTCoreMqtt::loop() {
@@ -159,11 +160,19 @@ void CloudIoTCoreMqtt::mqttConnect_nonBlocking(bool skip) {
   onConnect();
 }
 
+unsigned int CloudIoTCoreMqtt::getPort() {
+  if (this->useHttpPort) {
+    return CLOUD_IOT_CORE_HTTP_PORT;
+  } else {
+    return CLOUD_IOT_CORE_MQTT_PORT;
+  }
+}
+
 void CloudIoTCoreMqtt::startMQTT() {
   if (this->useLts) {
-    this->mqttClient->begin(CLOUD_IOT_CORE_MQTT_HOST_LTS, CLOUD_IOT_CORE_MQTT_PORT, *netClient);
+    this->mqttClient->begin(CLOUD_IOT_CORE_MQTT_HOST_LTS, getPort(), *netClient);
   } else {
-    this->mqttClient->begin(CLOUD_IOT_CORE_MQTT_HOST, CLOUD_IOT_CORE_MQTT_PORT, *netClient);
+    this->mqttClient->begin(CLOUD_IOT_CORE_MQTT_HOST, getPort(), *netClient);
   }
   this->mqttClient->onMessage(messageReceived);
 }
@@ -251,7 +260,7 @@ void CloudIoTCoreMqtt::logError() {
 
 void CloudIoTCoreMqtt::logConfiguration(bool showJWT) {
   Serial.println("Connect with " + String(CLOUD_IOT_CORE_MQTT_HOST_LTS) +
-      ":" + String(CLOUD_IOT_CORE_MQTT_PORT));
+      ":" + String(getPort()));
   Serial.println("ClientId: " + device->getClientId());
   if (showJWT) {
     Serial.println("JWT: " + getJwt());

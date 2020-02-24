@@ -30,14 +30,17 @@ class CloudIoTCoreMqtt {
     unsigned long iat = 0; // "Issued At Time" time parameter for jwt
     boolean logConnect = true;
     boolean useLts = false;
+    boolean useHttpPort = false;
     String jwt;
 
     MQTTClient *mqttClient;
     Client *netClient;
     CloudIoTCoreDevice *device;
 
+    unsigned int getPort();
+
   public:
-    CloudIoTCoreMqtt(MQTTClient *mqttClient, Client *netClient, CloudIoTCoreDevice *device);
+    CloudIoTCoreMqtt(MQTTClient *mqttClient, Client *netClient, CloudIoTCoreDevice *device, bool useHttpPort = false);
 
     void loop();
     void mqttConnect(bool skip = false);
